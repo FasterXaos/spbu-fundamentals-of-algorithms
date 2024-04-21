@@ -15,22 +15,27 @@ class Stack:
         self._top_i: int = -1  # index of the most recently inserted element
 
     def empty(self) -> bool:
-        return self._top_i == -1
+        ##########################
+        ### PUT YOUR CODE HERE ###
+        ##########################
+
+        pass
 
     def push(self, x: Any) -> None:
         """Complexity: O(1)"""
-        if self._top_i == len(self._array) - 1:
-            raise StackOverflowException("Stack overflow")
-        self._top_i += 1
-        self._array[self._top_i] = x
+        ##########################
+        ### PUT YOUR CODE HERE ###
+        ##########################
+
+        pass
 
     def pop(self) -> Any:
         """Complexity: O(1)"""
-        if self.empty():
-            raise StackUnderflowException("Stack underflow")
-        top_element = self._array[self._top_i]
-        self._top_i -= 1
-        return top_element
+        ##########################
+        ### PUT YOUR CODE HERE ###
+        ##########################
+
+        pass
 
 
 class StackUnderflowException(BaseException):
@@ -53,23 +58,18 @@ def get_starting_symbol(sym: str) -> str:
 
 
 def are_parentheses_valid(s: str) -> bool:
-    stack = Stack(len(s), str)
-    for char in s:
-        if char in "({[":
-            stack.push(char)
-        elif char in ")}]":
-            if stack.empty():
-                return False
-            if stack.pop() != get_starting_symbol(char):
-                return False  # Если последовательность скобок неверна
-    return stack.empty() 
+    ##########################
+    ### PUT YOUR CODE HERE ###
+    ##########################
+
+    pass
 
 
 if __name__ == "__main__":
     # Let's solve Valid Parentheses problem from leetcode.com:
     # https://leetcode.com/problems/valid-parentheses/
     cases = []
-    with open("practicum_2/valid_parentheses_cases.yaml", "r") as f:
+    with open("practicum_3/homework/basic/valid_parentheses_cases.yaml", "r") as f:
         cases = yaml.safe_load(f)
     for c in cases:
         res = are_parentheses_valid(c["input"])
