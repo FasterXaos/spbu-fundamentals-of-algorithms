@@ -45,17 +45,17 @@ def solve_via_simulated_annealing(
         new_conflicts = number_of_conflicts(G, new_colors)
 
         if new_conflicts < current_conflicts or np.random.rand() < np.exp((current_conflicts - new_conflicts) / temperature):
-            current_colors = new_colors  # Принятие нового решения
+            current_colors = new_colors
             loss_history[i] = new_conflicts
         else:
             loss_history[i] = current_conflicts
 
         if current_conflicts < number_of_conflicts(G, best_colors):
-            best_colors = current_colors  # Обновление лучшего решения
+            best_colors = current_colors
 
         temperature *= 0.99
 
-    set_colors(G, best_colors)  # Установка лучшей раскраски на графе
+    set_colors(G, best_colors)  # Установка лучшей раскраски
 
     return loss_history
 
