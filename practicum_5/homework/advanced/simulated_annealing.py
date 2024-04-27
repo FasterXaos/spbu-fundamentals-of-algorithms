@@ -38,13 +38,13 @@ def solve_via_simulated_annealing(
 
     current_colors = initial_colors.copy()
     best_colors = initial_colors.copy()
-
+    
     for i in range(n_iters):
         current_conflicts = number_of_conflicts(G, current_colors)
         new_colors = tweak(current_colors, n_max_colors)
         new_conflicts = number_of_conflicts(G, new_colors)
 
-        if new_conflicts < current_conflicts or np.random.rand() < np.exp((current_conflicts - new_conflicts) / temperature):
+        if new_conflicts < current_conflicts or (temperature > 0 and np.random.rand() < np.exp((current_conflicts - new_conflicts) / temperature)):
             current_colors = new_colors
             loss_history[i] = new_conflicts
         else:
@@ -53,9 +53,9 @@ def solve_via_simulated_annealing(
         if current_conflicts < number_of_conflicts(G, best_colors):
             best_colors = current_colors
 
-        temperature *= 0.99
+        temperature *= 0.999
 
-    set_colors(G, best_colors)  # Установка лучшей раскраски
+    set_colors(G, best_colors)
 
     return loss_history
 
@@ -64,9 +64,9 @@ if __name__ == "__main__":
     seed = 42
     np.random.seed(seed)
     G = nx.erdos_renyi_graph(n=100, p=0.05, seed=seed)
-    plot_graph(G)
+    #plot_graph(G)
 
-    n_max_iters = 500
+    n_max_iters = 3000
     n_max_colors = 3
     initial_colors = np.random.randint(low=0, high=n_max_colors - 1, size=len(G.nodes))
 
