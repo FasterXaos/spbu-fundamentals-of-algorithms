@@ -22,59 +22,22 @@ class BinaryTree:
         return self.root is None
 
     def zigzag_level_order_traversal(self) -> list[Any]:
-        if self.empty():
-            return []
 
-        result = []
-        level = 0
-        queue = [self.root]
+        ##########################
+        ### PUT YOUR CODE HERE ###
+        ##########################
 
-        while queue:
-            level_values = []
-            next_level = []
-
-            while queue:
-                node = queue.pop(0)
-                level_values.append(node.key)
-                if node.left:
-                    next_level.append(node.left)
-                if node.right:
-                    next_level.append(node.right)
-            if level % 2 == 1:
-                level_values.reverse()
-
-            result.append(level_values)
-            queue = next_level
-            level += 1
-            
-        return result
+        pass
 
 
 def build_tree(list_view: list[Any]) -> BinaryTree:
     bt = BinaryTree()
 
-    if not list_view:
-        return bt
+    ##########################
+    ### PUT YOUR CODE HERE ###
+    ##########################
 
-    root = Node(list_view[0])
-    bt.root = root
-    queue = [root]
-    i = 1
-
-    while queue and i < len(list_view):
-        current = queue.pop(0)
-        if list_view[i] is not None:
-            left_node = Node(list_view[i])
-            current.left = left_node
-            queue.append(left_node)
-        i += 1
-        if i < len(list_view) and list_view[i] is not None:
-            right_node = Node(list_view[i])
-            current.right = right_node
-            queue.append(right_node)
-        i += 1
-
-    return bt
+    pass
 
 
 if __name__ == "__main__":

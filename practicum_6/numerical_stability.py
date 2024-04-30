@@ -51,8 +51,9 @@ class Polynomial(Evaluator):
         res = self.dtype(0.0)
         x = self.dtype(x)
 
-        for i, coeff in enumerate(self.coeffs):
-            res += coeff * np.power(x, i, dtype=self.dtype)
+        ##########################
+        ### PUT YOUR CODE HERE ###
+        ##########################
 
         return res
 
@@ -60,9 +61,10 @@ class Polynomial(Evaluator):
         res = self.dtype(0.0)
         x = self.dtype(x)
 
-        for coeff in reversed(self.coeffs):
-            res = res * x + coeff
-        
+        ##########################
+        ### PUT YOUR CODE HERE ###
+        ##########################
+
         return res
 
 
@@ -79,7 +81,9 @@ class QuadraticEquationRoots(Evaluator):
         a = self.coeffs[2]
         b = self.coeffs[1]
         c = self.coeffs[0]
-        root_of_d = np.sqrt(np.power(b, 2, dtype=self.dtype) - self.dtype(4.0) * a * c, dtype=self.dtype)
+        root_of_d = np.sqrt(
+            np.power(b, 2, dtype=self.dtype) - self.dtype(4.0) * a * c, dtype=self.dtype
+        )
         x1 = (-b + root_of_d) / (self.dtype(2.0) * a)
         x2 = (-b - root_of_d) / (self.dtype(2.0) * a)
         return x1, x2
@@ -88,7 +92,9 @@ class QuadraticEquationRoots(Evaluator):
         a = self.coeffs[2]
         b = self.coeffs[1]
         c = self.coeffs[0]
-        root_of_d = np.sqrt(np.power(b, 2, dtype=self.dtype) - self.dtype(4.0) * a * c, dtype=self.dtype)
+        root_of_d = np.sqrt(
+            np.power(b, 2, dtype=self.dtype) - self.dtype(4.0) * a * c, dtype=self.dtype
+        )
         x1 = -(self.dtype(2.0) * c) / (b + root_of_d)
         x2 = -(self.dtype(2.0) * c) / (b - root_of_d)
         return x1, x2
