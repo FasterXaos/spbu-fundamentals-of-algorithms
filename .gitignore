@@ -1,3 +1,20 @@
+# Mac stuff
+.DS_Store
+
+# Archives
+*.gz
+
+# Latex
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.nav
+*.out
+*.snm
+*.synctex.gz
+*.toc
+
 # Real-time coding files
 _*.py
 _*.ipynb

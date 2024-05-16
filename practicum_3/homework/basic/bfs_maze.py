@@ -1,5 +1,5 @@
-from collections import deque
 from time import perf_counter
+
 
 class Maze:
     def __init__(self, list_view: list[list[str]]) -> None:
@@ -19,7 +19,8 @@ class Maze:
         return obj
 
     def print(self, path="") -> None:
-        i = 0
+        # Find the path coordinates
+        i = 0  # in the (i, j) pair, i is usually reserved for rows and j is reserved for columns
         j = self.start_j
         path_coords = set()
         for move in path:
@@ -36,31 +37,14 @@ class Maze:
 
 
 def solve(maze: Maze) -> None:
-    start_i = 0
-    start_j = maze.start_j
+    path = ""  # solution as a string made of "L", "R", "U", "D"
 
-    # Создаем очередь для BFS
-    queue = deque([(start_i, start_j, "")])
-    visited = set()
+    ##########################
+    ### PUT YOUR CODE HERE ###
+    ##########################
 
-    while queue:
-        i, j, path = queue.popleft()
-
-        # Если мы достигли финишной клетки
-        if i == len(maze.list_view) - 1 and maze.list_view[i][j] == "X":
-            print(f"Found: {path}")
-            maze.print(path)
-            return
-
-        visited.add((i, j))
-
-        # Проверяем соседние клетки на возможность прохода и добавляем их в очередь
-        for di, dj, direction in [(0, 1, "R"), (0, -1, "L"), (1, 0, "D"), (-1, 0, "U")]:
-            new_i, new_j = i + di, j + dj
-            if 0 <= new_i < len(maze.list_view) and 0 <= new_j < len(maze.list_view[0]) and maze.list_view[new_i][new_j] != "#" and (new_i, new_j) not in visited:
-                queue.append((new_i, new_j, path + direction))
-
-    print("No path found!")  # Если путь не найден
+    print(f"Found: {path}")
+    maze.print(path)
 
 
 def _shift_coordinate(i: int, j: int, move: str) -> tuple[int, int]:
@@ -76,7 +60,7 @@ def _shift_coordinate(i: int, j: int, move: str) -> tuple[int, int]:
 
 
 if __name__ == "__main__":
-    maze = Maze.from_file("practicum_3/homework/basic/maze_3.txt")
+    maze = Maze.from_file("practicum_3/homework/basic/maze_2.txt")
     t_start = perf_counter()
     solve(maze)
     t_end = perf_counter()
