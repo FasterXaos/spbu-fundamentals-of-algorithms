@@ -24,5 +24,6 @@ if __name__ == "__main__":
         ]
     )
     A = L @ L.T
+    print(A)
     L = cholesky(A)
     print(L)

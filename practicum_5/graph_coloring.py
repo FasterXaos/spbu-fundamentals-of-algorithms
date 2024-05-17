@@ -1,4 +1,3 @@
-from mimetypes import init
 from typing import Protocol
 
 import numpy as np
@@ -31,10 +30,7 @@ def set_colors(G, colors):
 
 def tweak(colors, n_max_colors):
     new_colors = colors.copy()
-    n_nodes = len(new_colors)
-    random_i = np.random.randint(low=0, high=n_nodes)
-    random_color = np.random.randint(low=0, high=n_max_colors)
-    new_colors[random_i] = random_color
+    new_colors[np.random.randint(len(colors))] = np.random.randint(n_max_colors)
     return new_colors
 
 
@@ -43,20 +39,19 @@ def solve_via_hill_climbing(
 ):
     loss_history = np.zeros((n_iters,), dtype=np.int_)
     n_tweaks = 10
-    cur_colors = initial_colors
-    next_colors = initial_colors.copy()
-    next_colors_best = initial_colors.copy()
+    cur_colors = initial_colors.copy()
     for i in range(n_iters):
         loss_history[i] = number_of_conflicts(G, cur_colors)
-        next_colors_best = tweak(cur_colors, n_max_colors)
-        n_conflicts_best = number_of_conflicts(G, next_colors_best)
+        n_conflicts_cur = loss_history[i]
+        next_colors_best = cur_colors.copy()
         for _ in range(n_tweaks):
             next_colors = tweak(cur_colors, n_max_colors)
-            if number_of_conflicts(G, next_colors) < n_conflicts_best:
+            n_conflicts_next = number_of_conflicts(G, next_colors)
+            if n_conflicts_next < n_conflicts_cur:
                 next_colors_best = next_colors
-                n_conflicts_best = number_of_conflicts(G, next_colors)
-        if n_conflicts_best < number_of_conflicts(G, cur_colors):
-            cur_colors = next_colors_best
+                n_conflicts_cur = n_conflicts_next
+        if n_conflicts_cur < loss_history[i]:
+            cur_colors = next_colors_best      
     return loss_history
 
 
@@ -66,7 +61,7 @@ def solve_via_random_search(
     loss_history = np.zeros((n_iters,), dtype=np.int_)
     for i in range(n_iters):
         colors = np.random.randint(low=0, high=n_max_colors - 1, size=len(G.nodes))
-        loss_history[i] = number_of_conflicts(G, colors)
+        loss_history[i]= number_of_conflicts(G, colors)
     return loss_history
 
 
@@ -80,33 +75,30 @@ def solve_with_restarts(
 ) -> NDArrayInt:
     loss_history = np.zeros((n_restarts, n_iters), dtype=np.int_)
     for i in range(n_restarts):
-        print(f"Restart #{i + 1}")
-        initial_colors = np.random.randint(
-            low=0, high=n_max_colors - 1, size=len(G.nodes)
-        )
+        print(f"Restart #{i+1}")
+        initial_colors = np.random.randint(low=0, high=n_max_colors - 1, size=len(G.nodes))
         set_colors(G, initial_colors)
-        loss_history_per_run = solver(G, n_max_colors, initial_colors, n_max_iters)
-        loss_history[i, :] = loss_history_per_run
+        loss_history[i] = solver(G, n_max_colors, initial_colors, n_iters)
     return loss_history
 
 
 if __name__ == "__main__":
-    seed = 42
+    seed = 69
     np.random.seed(seed)
     G = nx.erdos_renyi_graph(n=100, p=0.05, seed=seed)
-    plot_graph(G)
+    #plot_graph(G)
 
     n_max_iters = 500
-    n_max_colors = 3
+    n_max_colors = 4
     initial_colors = np.random.randint(low=0, high=n_max_colors - 1, size=len(G.nodes))
 
     loss_history = solve_via_random_search(G, n_max_colors, initial_colors, n_max_iters)
-    plot_loss_history(loss_history)
+    #plot_loss_history(loss_history)
 
     loss_history = solve_via_hill_climbing(G, n_max_colors, initial_colors, n_max_iters)
-    plot_loss_history(loss_history)
+    #plot_loss_history(loss_history)
 
-    n_restarts = 10
+    n_restarts = 3
     loss_history = solve_with_restarts(
         solve_via_hill_climbing,
         G,
@@ -116,3 +108,4 @@ if __name__ == "__main__":
         n_restarts,
     )
     plot_loss_history(loss_history)
+    print()

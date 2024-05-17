@@ -15,28 +15,22 @@ class Stack:
         self._top_i: int = -1  # index of the most recently inserted element
 
     def empty(self) -> bool:
-        ##########################
-        ### PUT YOUR CODE HERE ###
-        ##########################
-
-        return ...
+        return self._top_i == -1
 
     def push(self, x: Any) -> None:
         """Complexity: O(1)"""
-
-        ##########################
-        ### PUT YOUR CODE HERE ###
-        ##########################
-
-        pass
+        if self._top_i == len(self._array) - 1:
+            raise StackOverflowException("Stack overflow")
+        self._top_i += 1
+        self._array[self._top_i] = x
 
     def pop(self) -> Any:
         """Complexity: O(1)"""
-        ##########################
-        ### PUT YOUR CODE HERE ###
-        ##########################
-
-        return ...
+        if self.empty():
+            raise StackUnderflowException("Stack underflow")
+        top_element = self._array[self._top_i]
+        self._top_i -= 1
+        return top_element
 
 
 class StackUnderflowException(BaseException):
@@ -59,11 +53,16 @@ def get_starting_symbol(sym: str) -> str:
 
 
 def are_parentheses_valid(s: str) -> bool:
-    ##########################
-    ### PUT YOUR CODE HERE ###
-    ##########################
-
-    return ...
+    stack = Stack(len(s), str)
+    for char in s:
+        if char in "({[":
+            stack.push(char)
+        elif char in ")}]":
+            if stack.empty():
+                return False
+            if stack.pop() != get_starting_symbol(char):
+                return False  # Если последовательность скобок неверна
+    return stack.empty() 
 
 
 if __name__ == "__main__":

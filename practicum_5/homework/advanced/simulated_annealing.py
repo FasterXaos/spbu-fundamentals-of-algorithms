@@ -22,14 +22,40 @@ def set_colors(G, colors):
         G.nodes[n]["color"] = color
 
 
+def tweak(colors, n_max_colors):
+    new_colors = colors.copy()
+    index_to_change = np.random.randint(len(colors))
+    new_color = np.random.randint(n_max_colors)
+    new_colors[index_to_change] = new_color
+    return new_colors
+
+
 def solve_via_simulated_annealing(
     G: nx.Graph, n_max_colors: int, initial_colors: NDArrayInt, n_iters: int
 ):
     loss_history = np.zeros((n_iters,), dtype=np.int_)
+    temperature = 1.0
 
-    ##########################
-    ### PUT YOUR CODE HERE ###
-    ##########################
+    current_colors = initial_colors.copy()
+    best_colors = initial_colors.copy()
+    
+    for i in range(n_iters):
+        current_conflicts = number_of_conflicts(G, current_colors)
+        new_colors = tweak(current_colors, n_max_colors)
+        new_conflicts = number_of_conflicts(G, new_colors)
+
+        if new_conflicts < current_conflicts or (temperature > 0 and np.random.rand() < np.exp((current_conflicts - new_conflicts) / temperature)):
+            current_colors = new_colors
+            loss_history[i] = new_conflicts
+        else:
+            loss_history[i] = current_conflicts
+
+        if current_conflicts < number_of_conflicts(G, best_colors):
+            best_colors = current_colors
+
+        temperature *= 0.9
+
+    set_colors(G, best_colors)
 
     return loss_history
 
@@ -38,9 +64,9 @@ if __name__ == "__main__":
     seed = 42
     np.random.seed(seed)
     G = nx.erdos_renyi_graph(n=100, p=0.05, seed=seed)
-    plot_graph(G)
+    #plot_graph(G)
 
-    n_max_iters = 500
+    n_max_iters = 3000
     n_max_colors = 3
     initial_colors = np.random.randint(low=0, high=n_max_colors - 1, size=len(G.nodes))
 

@@ -11,31 +11,38 @@ def visit(node: Any):
 
 
 def dfs_recursive(G: nx.Graph, node: Any, visited: dict[Any]) -> None:
-    ##########################
-    ### PUT YOUR CODE HERE ###
-    ##########################
-
-    pass
+    visited[node] = True
+    visit(node)
+        
+    for neighbor in G.neighbors(node):
+        if not visited[neighbor]:
+            dfs_recursive(G, neighbor, visited)
 
 
 def dfs_iterative(G: nx.Graph, node: Any) -> None:
-    ##########################
-    ### PUT YOUR CODE HERE ###
-    ##########################
-
-    pass
+    visited = {node: False for node in G.nodes()}  # Initialize visited dictionary
+    stack = [node]  # Initialize stack with starting node
+    while stack:
+        current_node = stack.pop()  # Pop the top node from the stack
+        if not visited[current_node]:
+            visited[current_node] = True
+            visit(current_node)
+            # Push unvisited neighbors onto the stack
+            for neighbor in G.neighbors(current_node):
+                if not visited[neighbor]:
+                    stack.append(neighbor)
 
 
 def dfs_recursive_postorder(G: nx.DiGraph, node: Any, visited: dict[Any]) -> None:
-    ##########################
-    ### PUT YOUR CODE HERE ###
-    ##########################
-
-    pass
+    if not visited[node]:
+        visited[node] = True
+        for neighbor in G.neighbors(node):
+            if not visited[neighbor]:
+                dfs_recursive_postorder(G, neighbor, visited)
+        visit(node)
 
 
 if __name__ == "__main__":
-    # Load and plot the graph
     G = nx.read_edgelist("practicum_2/graph_2.edgelist", create_using=nx.Graph)
     # plot_graph(G)
 

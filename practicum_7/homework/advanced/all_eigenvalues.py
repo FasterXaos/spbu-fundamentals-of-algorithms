@@ -18,6 +18,30 @@ class Performance:
     time: float = 0.0
     relative_error: float = 0.0
 
+
+def householder_tridiagonalization(A: NDArrayFloat) -> NDArrayFloat:
+    n = A.shape[0]
+    A = A.copy()
+    
+    for k in range(n - 2):
+        x = A[k+1:, k]
+        e1 = np.zeros_like(x)
+        e1[0] = np.linalg.norm(x) * np.sign(x[0])
+        v = x + e1
+        v_norm = np.linalg.norm(v)
+        
+        if v_norm != 0:
+            v = v / v_norm
+        
+            Hk = np.eye(n)
+            Hk[k+1:, k+1:] -= 2.0 * np.outer(v, v)
+        
+            A = Hk @ A @ Hk.T
+        #print(k, n, sep=" ")
+    
+    return A
+
+
 def qr(A):
     n = A.shape[0]
     Q = np.zeros_like(A)
@@ -29,25 +53,51 @@ def qr(A):
             v -= R[j, i] * Q[:, j]
         R[i, i] = np.linalg.norm(v)
         Q[:, i] = v / R[i, i]
-        print(i, n, sep=" ")
+        #print(i, n, sep=" ")
     #print(Q, R, Q@R, sep='\n')
     return Q, R
 
 
-def get_all_eigenvalues(A: NDArrayFloat, n_iters: int = 3) -> NDArrayFloat:
-    A_k = A.copy()
-    eigenvalues = []
+def qr_tridiagonal(A):
     n = A.shape[0]
+    Q = np.eye(n)
+    R = A.copy()
 
-    for m in range(n_iters):
-        print(f"qr: {m+1}")
-        Q, R = qr(A_k)
+    for i in range(n - 1):
+        x = R[i:i+2, i]
+        norm_x = np.linalg.norm(x)
+        if norm_x != 0:
+            c, s = x[0] / norm_x, -x[1] / norm_x
+        else:
+            c, s = 1.0, 0.0
+        
+        for j in range(i, n):
+            tau1, tau2 = R[i, j], R[i + 1, j]
+            R[i, j] = c * tau1 - s * tau2
+            R[i + 1, j] = s * tau1 + c * tau2
+        
+        for j in range(n):
+            tau1, tau2 = Q[j, i], Q[j, i + 1]
+            Q[j, i] = c * tau1 - s * tau2
+            Q[j, i + 1] = s * tau1 + c * tau2
+
+        #print(i, n, sep=" ")
+
+    return Q, R
+
+
+def get_all_eigenvalues(A: NDArrayFloat, n_iters: int = 5) -> NDArrayFloat:
+    A_k = householder_tridiagonalization(A)
+
+    for _ in range(n_iters):
+        Q, R = qr_tridiagonal(A_k)
         A_k = R @ Q
 
+    eigenvalues = []
+    n = A_k.shape[0]
     i = 0
     while i < n:
         if i < n - 1 and np.abs(A_k[i, i+1]) > 1e-10:
-            # Блок 2x2 с комплексным собственным значением
             a = A_k[i, i]
             b = A_k[i, i+1]
             c = A_k[i+1, i]
@@ -59,7 +109,6 @@ def get_all_eigenvalues(A: NDArrayFloat, n_iters: int = 3) -> NDArrayFloat:
             eigenvalues.append(eigenvalue2)
             i += 2
         else:
-            # Одиночное собственное значение
             eigenvalues.append(A_k[i, i])
             i += 1
 
@@ -85,8 +134,8 @@ def run_test_cases(
         eigvals_exact = get_numpy_eigenvalues(A)
         eigvals_exact = np.sort(eigvals_exact)
         eigvals_sorted = np.sort(eigvals)
-        #for i, (val_sorted, val_exact) in enumerate(zip(eigvals_sorted, eigvals_exact)):
-        #    print(f"{i+1}. Sorted: {val_sorted}, Exact: {val_exact}")
+        for i, (val_sorted, val_exact) in enumerate(zip(eigvals_sorted, eigvals_exact)):
+            print(f"{i+1}. Sorted: {val_sorted}, Exact: {val_exact}")
         perf.relative_error = np.median(
             np.abs(eigvals_exact - eigvals_sorted) / np.abs(eigvals_exact)
         )

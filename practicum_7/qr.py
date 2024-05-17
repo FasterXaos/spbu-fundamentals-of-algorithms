@@ -54,27 +54,38 @@ def get_eigenvalues_via_qr(A: NDArrayFloat, n_iters: int = 100) -> NDArrayFloat:
 
 def householder_tridiagonalization(A: NDArrayFloat) -> NDArrayFloat:
     n = A.shape[0]
+    A = A.copy()
+    
     for k in range(n - 2):
-        v = np.zeros(n)
-        v[k + 1:] = A[k + 1:, k]
-        v[k + 1] += sign(A[k + 1, k]) * np.linalg.norm(v)
+        x = A[k+1:, k]
+        e1 = np.zeros_like(x)
+        e1[0] = np.linalg.norm(x) * np.sign(x[0])
+        v = x + e1
+        v = v / np.linalg.norm(v)
         
-        H = np.eye(n) - 2 * np.outer(v, v) / np.dot(v, v)
-        A = H @ A @ H
+        Hk = np.eye(n)
+        Hk[k+1:, k+1:] -= 2.0 * np.outer(v, v)
         
+        A = Hk @ A @ Hk.T
+    
     return A
 
 def sign(x):
     return 1 if x > 0 else -1
 
 
-
 if __name__ == "__main__":
-    A = np.random.rand(16, 16)
+    #A = np.random.rand(4, 4)
+    A = np.array([[4, 1, -2, 2],
+              [1, 2, 0, 1],
+              [-2, 0, 3, -2],
+              [2, 1, -2, -1]], dtype=float)
+    
     eigvals = get_eigenvalues_via_qr(A, n_iters=10000)
     print(np.sort(eigvals))
     eigvals = get_numpy_eigenvalues(A)
     print (np.sort(eigvals))
 
     A_tri = householder_tridiagonalization(A)
+    print(A_tri)
     eigvals_tri = get_eigenvalues_via_qr(A_tri, n_iters=20)
