@@ -28,6 +28,17 @@ def set_colors(G, colors):
         G.nodes[n]["color"] = color
 
 
+"""
+def tweak(colors, n_max_colors, n_changes=1):
+    new_colors = colors.copy()
+    indices_to_change = np.random.choice(len(colors), size=n_changes, replace=False)
+    for index in indices_to_change:
+        new_color = np.random.randint(n_max_colors)
+        new_colors[index] = new_color
+    return new_colors
+"""
+
+
 def tweak(colors, n_max_colors):
     new_colors = colors.copy()
     new_colors[np.random.randint(len(colors))] = np.random.randint(n_max_colors)
@@ -40,18 +51,23 @@ def solve_via_hill_climbing(
     loss_history = np.zeros((n_iters,), dtype=np.int_)
     n_tweaks = 10
     cur_colors = initial_colors.copy()
+
     for i in range(n_iters):
         loss_history[i] = number_of_conflicts(G, cur_colors)
         n_conflicts_cur = loss_history[i]
         next_colors_best = cur_colors.copy()
+
         for _ in range(n_tweaks):
             next_colors = tweak(cur_colors, n_max_colors)
             n_conflicts_next = number_of_conflicts(G, next_colors)
+
             if n_conflicts_next < n_conflicts_cur:
                 next_colors_best = next_colors
                 n_conflicts_cur = n_conflicts_next
+
         if n_conflicts_cur < loss_history[i]:
-            cur_colors = next_colors_best      
+            cur_colors = next_colors_best  
+                
     return loss_history
 
 

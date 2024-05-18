@@ -39,7 +39,7 @@ def has_cycles(g: nx.DiGraph):
 
     for node in g.nodes:
         if node not in visited:
-            if dfs(node):
+            if dfs(node): 
                 return True
     return False
 

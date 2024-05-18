@@ -37,7 +37,7 @@ def householder_tridiagonalization(A: NDArrayFloat) -> NDArrayFloat:
             Hk[k+1:, k+1:] -= 2.0 * np.outer(v, v)
         
             A = Hk @ A @ Hk.T
-        #print(k, n, sep=" ")
+        print(k, n, sep=" ")
     
     return A
 
@@ -48,9 +48,11 @@ def qr(A):
     R = np.zeros_like(A)
     for i in range(n):
         v = A[:, i]
+
         for j in range(i):
             R[j, i] = np.dot(Q[:, j], A[:, i])
             v -= R[j, i] * Q[:, j]
+            
         R[i, i] = np.linalg.norm(v)
         Q[:, i] = v / R[i, i]
         #print(i, n, sep=" ")
@@ -87,9 +89,11 @@ def qr_tridiagonal(A):
 
 
 def get_all_eigenvalues(A: NDArrayFloat, n_iters: int = 5) -> NDArrayFloat:
+    #A_k = A.copy()
     A_k = householder_tridiagonalization(A)
 
     for _ in range(n_iters):
+        #Q, R = qr(A_k)
         Q, R = qr_tridiagonal(A_k)
         A_k = R @ Q
 

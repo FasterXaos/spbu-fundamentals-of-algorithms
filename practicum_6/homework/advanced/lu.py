@@ -36,13 +36,14 @@ def lu(A: NDArray, permute: bool) -> tuple[NDArray, NDArray, NDArray]:
         for j in range(k+1, n):
             L[j, k] = U[j, k] / U[k, k]
             U[j, k:] -= L[j, k] * U[k, k:]
+        
+        print(k, n, sep=" ")
 
     return L, U, P
 
 def solve(L: NDArray, U: NDArray, P: NDArray, b: NDArray) -> NDArray:
     n = L.shape[0]
 
-    # Permute right vector
     b_permuted = P.dot(b)
     
     #(Ly = Pb)
@@ -87,7 +88,7 @@ def run_test_cases(n_runs: int, path_to_homework: str) -> dict[str, Performance]
 
 
 if __name__ == "__main__":
-    n_runs = 10
+    n_runs = 1
     path_to_homework = os.path.join("practicum_6", "homework", "advanced")
     performance_by_matrix = run_test_cases(
         n_runs=n_runs, path_to_homework=path_to_homework
